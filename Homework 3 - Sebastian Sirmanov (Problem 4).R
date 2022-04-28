@@ -12,28 +12,23 @@
 
 #####Problem 4 - Solution#####
 library(tidyverse)
+library(tidyquant)
 library(nycflights13)
 View(flights)
 
 #4.1
 common_dest <- flights %>% 
   group_by(carrier, dest) %>%
-  summarise(n = n()) %>%
-  mutate(rank = rank(desc(n))) %>%
-  filter(rank == 1)
+  select(carrier, dest) %>%
+  summarise(NrOfFlights = n()) %>%
+  arrange(desc(NrOfFlights)) %>%
+  slice_head()
 
 #4.2
-biggest_dep_delay <- flights %>% 
-  group_by(carrier, dep_delay) %>%
-  summarise(n = n()) %>%
-  mutate(rank = rank(desc(n))) %>%
-  filter(rank == 1)
-
-biggest_arr_delay <- flights %>% 
-  group_by(carrier, arr_delay) %>%
-  summarise(n = n()) %>%
-  mutate(rank = rank(desc(n))) %>%
-  filter(rank == 1)
+biggest_delay <- flights %>%
+  arrange(desc(arr_delay)) %>%
+  group_by(carrier) %>%
+  slice_head()
 
 #4.3
 
