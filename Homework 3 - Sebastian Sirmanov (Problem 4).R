@@ -34,7 +34,15 @@ biggest_delay <- flights %>%
 
 
 #4.4
-
+sss <- flights %>%
+  filter(year == 2013,
+         month == 2,
+         !is.na(dep_time)) %>%
+  arrange(day, dep_time) %>%
+  group_by(day) %>%
+  filter(row_number() == 1 |
+         row_number() == n()) %>%
+  ungroup()
 
 #4.5
 
