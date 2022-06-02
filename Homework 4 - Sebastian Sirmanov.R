@@ -41,9 +41,17 @@ Final2 <- Final %>%
   arrange(Symbol, desc(date))
 
 ###4.
-
+select <- Final2 %>%
+  dplyr::group_by(Symbol)%>%
+  dplyr::slice(c(1, n()))%>%
+  dplyr::ungroup()
 
 ###5.
+select2 <- Final %>%
+  dplyr::mutate(DatesNew = base::substr(Dates , 1, 7)) %>%
+  dplyr::group_by(Symbol, DatesNew) %>%
+  dplyr::slice_tail()%>%
+  dplyr::ungroup()
 
 #####Problem 2#####
 #Use the dataframe from problem 1.2.
