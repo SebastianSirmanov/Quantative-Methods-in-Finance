@@ -27,18 +27,18 @@ DATA <- dates %>%
 
 
 SMA <- DATA %>%
-  mutate(SMA20 = SMA(adjusted, n = 20),
+  dplyr::mutate(SMA20 = SMA(adjusted, n = 20),
          SD20 = RcppRoll::roll_sd(adjusted, n =20, align = "right", fill = NA),
          Upper = SMA20+2*SD20,
          Lower = SMA20-2*SD20,
          buy_sell = case_when(lag(adjusted)<lag(Upper) & adjusted > Upper ~ "sell",
                               lag(adjusted)> lag(Lower) & adjusted<Lower~"buy")) %>%
-  mutate(ProfitCoeff = (adjusted/lag(adjusted)),
+  dplyr::mutate(ProfitCoeff = (adjusted/lag(adjusted)),
          ProfitCoeff = ifelse(is.na(ProfitCoeff), 1, ProfitCoeff),
          BenchmarkMoney = 100 * cumprod(ProfitCoeff),
          buy_sell_for_comparison = buy_sell)%>%
-  fill(buy_sell_for_comparison, .direction = "down")%>%
-  mutate(buy_sell_for_comparison = if_else(is.na(buy_sell_for_comparison), "buy", buy_sell_for_comparison),
+  tidyr::fill(buy_sell_for_comparison, .direction = "down")%>%
+  dplyr::mutate(buy_sell_for_comparison = if_else(is.na(buy_sell_for_comparison), "buy", buy_sell_for_comparison),
          ProfitCoeff_strategy = case_when(buy_sell_for_comparison == "sell"~ 1,
                                           buy_sell_for_comparison == "buy"~ ProfitCoeff),
          StrategyMoney = 100 * cumprod(ProfitCoeff_strategy)) 
@@ -51,7 +51,7 @@ SMA <- DATA %>%
 # If the price goes below 35 - buy.
 #####Problem 2#####
 RSI <- DATA %>%
-  mutate(gain_loss = (adjusted/lag(adjusted))-1,
+  dplyr::mutate(gain_loss = (adjusted/lag(adjusted))-1,
          gain_loss = if_else(is.na(gain_loss), 0, gain_loss),
          average_gain1 = case_when(gain_loss >= 0 ~gain_loss, 
                                    gain_loss <0 ~ 0),
@@ -67,8 +67,8 @@ RSI <- DATA %>%
          ProfitCoeff = if_else(is.na(ProfitCoeff), 1, ProfitCoeff),
          BenchmarkMoney = 100 * cumprod(ProfitCoeff),
          buy_sell_for_comparison = buy_sell)%>%
-  fill(buy_sell_for_comparison, .direction = "down")%>%
-  mutate(buy_sell_for_comparison = if_else(is.na(buy_sell_for_comparison), "buy", buy_sell_for_comparison),
+  tidyr::fill(buy_sell_for_comparison, .direction = "down")%>%
+  dplyr::mutate(buy_sell_for_comparison = if_else(is.na(buy_sell_for_comparison), "buy", buy_sell_for_comparison),
          ProfitCoeff_strategy = case_when(buy_sell_for_comparison == "sell"~ 1,
                                           buy_sell_for_comparison == "buy"~ ProfitCoeff),
          StrategyMoney = 100 * cumprod(ProfitCoeff_strategy))
